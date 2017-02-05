@@ -1,0 +1,3 @@
+Generate the jar: sqoop codegen --connect "jdbc:mysql://example.com/sqoop" --username sqoop --password sqoop --table tbl
+Look for the line in the output: Writing jar file: /tmp/sqoop-abe/compile/4182409b0f559d7259a32a950627e1aa/tbl.jar
+Use the above jar in your import commmand: sqoop import -fs local -jt local -libjars /tmp/sqoop-abe/compile/4182409b0f559d7259a32a950627e1aa/tbl.jar --connect "jdbc:mysql://example.com/sqoop" --username sqoop --password sqoop --table tbl

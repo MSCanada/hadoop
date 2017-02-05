@@ -1,0 +1,11 @@
+drivers = LOAD '/user/drivers.csv' USING PigStorage(',') as (driverId:int, name:chararray, ssn:chararray, location:chararray, certified:chararray, wage_plan:chararray);
+result_filter = filter drivers by ($0 > 1);
+driver_details = foreach result_filter generate driverId, name, ssn , location;
+timesheet = LOAD '/user/timesheet.csv' USING PigStorage(',') as (driverId:int, week:int, hours_logged:int, miles_logged:int);
+raw_timesheet= FILTER timesheet by $0>1;
+timesheet_logged = foreach raw_timesheet GENERATE driverId, hours_logged, miles_logged;
+grp_logged = group timesheet_logged by driverId;
+sum_logged = foreach grp_logged generate group as driverId, SUM(timesheet_logged.hours_logged) as sum_hourslogged, SUM(timesheet_logged.miles_logged) as sum_mileslogged;
+join_sum_logged = join sum_logged by driverId, driver_details by driverId;
+join_data = foreach join_sum_logged generate $0 as driverId, $4 as name, $1 as hours_logged, $2 as miles_logged;
+dump join_data;
